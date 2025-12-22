@@ -18,6 +18,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Blix",
   description: "An Infinite craft based game",
+  icons: {
+    icon: "/Blixlogo.ico",
+  },
 };
 
 export default function RootLayout({
