@@ -12,7 +12,7 @@ class CraftService:
         self._cache_ttl = 86400
         self.basic_elements = ["Water", "Fire", "Wind", "Earth"]
         self.api_key = os.getenv("OPENROUTER_API_KEY", "")
-        self.model = os.getenv("OPENROUTER_MODEL", "google/gemini-2.0-flash-001")
+        self.model = os.getenv("OPENROUTER_MODEL", "google/gemini-2.0-flash-exp:free")
         
         # core combinations, to guide the recipies in order to give results similar to infinitecraft wiki
         self.core_combinations = {
