@@ -16,14 +16,35 @@ const RightSidebar = () => {
 
   // Touch handlers for sidebar elements
   const handleTouchStart = (element: Element, e: React.TouchEvent) => {
-    e.preventDefault();
+    // Don't prevent default to allow scrolling
     const touch = e.touches[0];
-    soundManager.playPickup();
-    setTouchDrag({
-      element,
-      currentX: touch.clientX,
-      currentY: touch.clientY
-    });
+    const startX = touch.clientX;
+    const startY = touch.clientY;
+    
+    // Wait to see if it's a drag or scroll
+    const timeout = setTimeout(() => {
+      soundManager.playPickup();
+      setTouchDrag({
+        element,
+        currentX: startX,
+        currentY: startY
+      });
+    }, 150);
+    
+    // Cancel if user scrolls
+    const handleMove = (moveEvent: TouchEvent) => {
+      const moveTouch = moveEvent.touches[0];
+      const deltaX = Math.abs(moveTouch.clientX - startX);
+      const deltaY = Math.abs(moveTouch.clientY - startY);
+      
+      // If scrolling horizontally, cancel drag
+      if (deltaX > 10 && deltaX > deltaY) {
+        clearTimeout(timeout);
+        document.removeEventListener('touchmove', handleMove);
+      }
+    };
+    
+    document.addEventListener('touchmove', handleMove, { once: true });
   };
 
   useEffect(() => {
@@ -95,9 +116,10 @@ const RightSidebar = () => {
       className={`
         inline-flex items-center gap-1.5 px-2.5 py-1.5
         rounded-md border cursor-grab active:cursor-grabbing
-        text-sm font-medium select-none touch-none
-        transition-all duration-150 ease-out
-        hover:scale-105 active:scale-105 flex-shrink-0
+        text-sm font-medium select-none
+        transition-all duration-200 ease-out
+        hover:scale-105 active:scale-95 flex-shrink-0
+        will-change-transform
         ${isDarkMode 
           ? 'bg-black border-gray-600 text-white hover:bg-gray-900' 
           : 'bg-white border-gray-300 text-gray-900 hover:bg-gray-100 shadow-sm'
@@ -142,7 +164,7 @@ const RightSidebar = () => {
           <div className={`text-xs mb-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
             {discoveredElements.length} elements
           </div>
-          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+          <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide touch-pan-x">
             {discoveredElements.map((element) => (
               <ElementItem key={element.id} element={element} />
             ))}

@@ -198,31 +198,31 @@ const CraftingCanvas = () => {
       if (touch.clientX >= rect.left && touch.clientX <= rect.right &&
           touch.clientY >= rect.top && touch.clientY <= rect.bottom) {
         
-        // Check if dropped on another element
-        const elementsAtPoint = document.elementsFromPoint(touch.clientX, touch.clientY);
-        const targetElementDiv = elementsAtPoint.find(el => 
-          el.hasAttribute('data-element-id') && 
-          el.getAttribute('data-is-workspace') === 'true' &&
-          el.getAttribute('data-element-id') !== touchDrag.originalId
-        );
-
-        if (targetElementDiv) {
-          // Combine elements
-          const targetElement: Element = {
-            id: targetElementDiv.getAttribute('data-element-id') || '',
-            name: targetElementDiv.getAttribute('data-element-name') || '',
-            emoji: targetElementDiv.getAttribute('data-element-emoji') || '',
-            isBasic: false
-          };
+        // Find nearby elements for collision (within 60px radius for easier mobile interaction)
+        let closestElement: Element | null = null;
+        let closestDistance = 60; // Collision radius in pixels
+        
+        workspaceElements.forEach(el => {
+          if (el.id === touchDrag.originalId) return; // Skip self
           
-          // Find the actual workspace element with position
-          const workspaceTarget = workspaceElements.find(el => el.id === targetElement.id);
-          if (workspaceTarget) {
-            if (touchDrag.isWorkspaceElement && touchDrag.originalId) {
-              removeWorkspaceElement(touchDrag.originalId);
-            }
-            handleElementCombine(touchDrag.element, workspaceTarget);
+          const elX = el.x || 0;
+          const elY = el.y || 0;
+          const distance = Math.sqrt(
+            Math.pow(dropX - elX, 2) + Math.pow(dropY - elY, 2)
+          );
+          
+          if (distance < closestDistance) {
+            closestDistance = distance;
+            closestElement = el;
           }
+        });
+
+        if (closestElement) {
+          // Combine with closest element
+          if (touchDrag.isWorkspaceElement && touchDrag.originalId) {
+            removeWorkspaceElement(touchDrag.originalId);
+          }
+          handleElementCombine(touchDrag.element, closestElement);
         } else {
           // Drop on empty canvas
           if (touchDrag.isWorkspaceElement && touchDrag.originalId) {
