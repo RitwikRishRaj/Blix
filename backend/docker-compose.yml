@@ -1,0 +1,26 @@
+services:
+  infinite-craft-api:
+    build: .
+    container_name: infinite-craft-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      - SITE_URL=${SITE_URL:-http://localhost:3000}
+      - SITE_NAME=${SITE_NAME:-Infinite Craft Game}
+    env_file:
+      - .env
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - infinite-craft-network
+
+networks:
+  infinite-craft-network:
+    driver: bridge

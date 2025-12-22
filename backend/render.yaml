@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: blix-backend
+    runtime: docker
+    rootDir: backend
+    envVars:
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: ALLOW_ORIGINS
+        sync: false
