@@ -53,6 +53,16 @@ async def get_elements():
         "discovered_elements": service.get_basic_elements()
     }
 
+@app.get("/stats")
+async def get_stats():
+    service = get_craft_service()
+    return {
+        "total_elements": len(service.basic_elements),
+        "total_combinations": len(service._cache),
+        "cache_size": len(service._cache),
+        "basic_elements": service.get_basic_elements()
+    }
+
 @app.post("/craft", response_model=CraftResponse)
 async def craft_elements(request: CraftRequest):
     start = time.time()
