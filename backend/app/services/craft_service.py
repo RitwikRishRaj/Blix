@@ -12,7 +12,7 @@ class CraftService:
         self._cache_ttl = 86400
         self.basic_elements = ["Water", "Fire", "Wind", "Earth"]
         self.api_key = os.getenv("OPENROUTER_API_KEY", "")
-        self.model = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-405b-instruct:free")
+        self.model = os.getenv("OPENROUTER_MODEL", "gpt-oss-20b")
         
         # core combinations, to guide the recipies in order to give results similar to infinitecraft wiki
         self.core_combinations = {
