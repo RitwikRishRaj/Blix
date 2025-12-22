@@ -91,9 +91,10 @@ const DraggableElement = ({
         rounded-md border
         cursor-grab active:cursor-grabbing
         text-sm font-medium
-        transition-all duration-150 ease-out
+        transition-all duration-200 ease-out
         select-none touch-none
-        ${isDragging ? 'opacity-60 scale-105' : 'hover:scale-105 active:scale-105'}
+        will-change-transform
+        ${isDragging ? 'opacity-50 scale-95' : 'hover:scale-105 active:scale-95'}
         ${isDarkMode 
           ? 'bg-black border-gray-600 text-white hover:bg-gray-900' 
           : 'bg-white border-gray-300 text-gray-900 hover:bg-gray-100 shadow-sm'

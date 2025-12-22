@@ -1,8 +1,8 @@
 """Craft Service for generating AI coombinations, although it might act dumb sometimes"""
 import os
 import time
-import httpx
 from typing import Optional, Dict, Tuple
+from cerebras.cloud.sdk import Cerebras
 
 class CraftService:
     """Crafting service using OpenRouter AI."""
@@ -11,8 +11,14 @@ class CraftService:
         self._cache: Dict[str, Tuple[str, str, float]] = {}  # key -> (result, emoji, timestamp)
         self._cache_ttl = 86400
         self.basic_elements = ["Water", "Fire", "Wind", "Earth"]
-        self.api_key = os.getenv("OPENROUTER_API_KEY", "")
-        self.model = os.getenv("OPENROUTER_MODEL", "meta-llama/llama-3.1-405b-instruct:free")
+        self.api_key = os.getenv("CEREBRAS_API_KEY", "")
+        self.model = "llama-3.3-70b"
+        
+        # Initialize Cerebras client
+        if self.api_key:
+            self.cerebras_client = Cerebras(api_key=self.api_key)
+        else:
+            self.cerebras_client = None
         
         # core combinations, to guide the recipies in order to give results similar to infinitecraft wiki
         self.core_combinations = {
@@ -71,83 +77,69 @@ class CraftService:
         # using AI for get results of combinations (unknown)
         result, emoji = await self._ai_combine(e1, e2)
         if result:
+            # Use AI emoji or fallback to sparkles
+            if not emoji:
+                emoji = "✨"
             self._cache[key] = (result, emoji, time.time())
             return (result, emoji, 'ai', False)
         
         return (None, None, 'nothing', False)
     
     async def _ai_combine(self, e1: str, e2: str) -> Tuple[Optional[str], Optional[str]]:
-        """Use OpenRouter AI to generate combination result."""
-        if not self.api_key:
-            print("No OpenRouter API key configured")
+        """Use Cerebras AI to generate combination result."""
+        if not self.cerebras_client:
+            print("No Cerebras API key configured")
             return (None, None)
         
-        prompt = f"""You are an Infinite Craft game engine. Combine these two elements creatively:
+        prompt = f"""Combine {e1} + {e2} in Infinite Craft style.
 
-Element 1: {e1}
-Element 2: {e2}
+Reply format: ElementName Emoji
+Examples:
+- Steam 💨
+- Plant 🌱
+- Dragon 🐉
+- Robot 🤖
 
-Rules:
-- Return a single new element that makes logical/creative sense
-- Be creative but logical (Fire + Water = Steam, Earth + Water = Plant)
-- Return "Nothing" only if combination truly makes no sense
-- Include a RELEVANT emoji that represents the result (not 🧪 unless it's actually a potion/chemical)
-
-Examples of good emoji choices:
-- Steam = 💨, Plant = 🌱, Lava = 🌋, Ocean = 🌊
-- Dragon = 🐉, Robot = 🤖, Star = ⭐, Moon = 🌙
-- Love = ❤️, Magic = 🪄, Crystal = 💎, Fire = 🔥
-
-Respond in EXACTLY this format (no extra text):
-RESULT: [element name]
-EMOJI: [single relevant emoji]"""
+Your turn: {e1} + {e2} ="""
 
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                response = await client.post(
-                    "https://openrouter.ai/api/v1/chat/completions",
-                    headers={
-                        "Authorization": f"Bearer {self.api_key}",
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "http://localhost:3000",
-                    },
-                    json={
-                        "model": self.model,
-                        "messages": [{"role": "user", "content": prompt}],
-                        "max_tokens": 50,
-                        "temperature": 0.7,
-                    }
-                )
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    content = data["choices"][0]["message"]["content"].strip()
-                    return self._parse_ai_response(content)
+            completion = self.cerebras_client.chat.completions.create(
+                messages=[{"role": "user", "content": prompt}],
+                model=self.model,
+                max_completion_tokens=20,
+                temperature=0.7,
+                top_p=1,
+                stream=False
+            )
+            
+            result_text = completion.choices[0].message.content.strip()
+            
+            # Extract element name and emoji
+            element_name = []
+            emoji = None
+            
+            for char in result_text:
+                if ord(char) > 127:  # Non-ASCII = emoji
+                    if not emoji:
+                        emoji = char
                 else:
-                    print(f"OpenRouter error: {response.status_code} - {response.text}")
-                    return (None, None)
+                    if not emoji:  # Only collect chars before emoji
+                        element_name.append(char)
+            
+            result = ''.join(element_name).strip()
+            
+            # Clean up common prefixes/suffixes
+            for prefix in ["Result:", "Answer:", "=", "-", ":", "Element:", "is", "equals"]:
+                if result.lower().startswith(prefix.lower()):
+                    result = result[len(prefix):].strip()
+            
+            if result and result.lower() != 'nothing':
+                return (result, emoji or "✨")
+            return (None, None)
                     
         except Exception as e:
-            print(f"AI request failed: {e}")
+            print(f"Cerebras error: {e}")
             return (None, None)
-    
-    def _parse_ai_response(self, content: str) -> Tuple[Optional[str], Optional[str]]:
-        """Parse AI response to extract result and emoji."""
-        result = None
-        emoji = None
-        
-        for line in content.split('\n'):
-            line = line.strip()
-            if line.startswith('RESULT:'):
-                result = line.replace('RESULT:', '').strip()
-            elif line.startswith('EMOJI:'):
-                emoji = line.replace('EMOJI:', '').strip()
-        
-        if result and result.lower() != 'nothing':
-            # here i am used sparkeles as the fallback emoji as a fallback incase it fails to relate 
-            return (result, emoji or "✨")
-        
-        return (None, None)
     
     def get_basic_elements(self) -> list:
         return self.basic_elements.copy()

@@ -24,6 +24,7 @@ const CraftingCanvas = () => {
     addWorkspaceElement, 
     removeWorkspaceElement, 
     addDiscoveredElement,
+    discoveredElements,
     setLoading,
     isDarkMode
   } = useGameStore();
@@ -103,11 +104,18 @@ const CraftingCanvas = () => {
             emoji: finalEmoji,
             isBasic: false
           };
-          addDiscoveredElement(newElement);
-          soundManager.playDiscovery();
           
-          setNewlyDiscoveredId(workspaceId);
-          setTimeout(() => setNewlyDiscoveredId(null), 2000);
+          // Check if this is a NEW discovery
+          const isNewDiscovery = !discoveredElements.some((e: Element) => e.name.toLowerCase() === data.result?.toLowerCase());
+          
+          if (isNewDiscovery) {
+            addDiscoveredElement(newElement);
+            soundManager.playDiscovery();
+            setNewlyDiscoveredId(workspaceId);
+            setTimeout(() => setNewlyDiscoveredId(null), 2000);
+          } else {
+            soundManager.playCombine();
+          }
           
           addWorkspaceElement({
             ...newElement,
