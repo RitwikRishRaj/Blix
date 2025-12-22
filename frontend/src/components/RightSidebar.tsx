@@ -1,11 +1,8 @@
 'use client';
 
 import { useGameStore, Element } from '@/store/game-store';
-import { useQuery } from '@tanstack/react-query';
-import { api } from '@/lib/api';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { soundManager } from '@/lib/sounds';
-import { assignEmojiToElement } from '@/lib/emoji-utils';
 
 interface TouchDragState {
   element: Element;
@@ -16,12 +13,6 @@ interface TouchDragState {
 const RightSidebar = () => {
   const { discoveredElements, isDarkMode, addWorkspaceElement } = useGameStore();
   const [touchDrag, setTouchDrag] = useState<TouchDragState | null>(null);
-
-  const { data: stats } = useQuery({
-    queryKey: ['gameStats'],
-    queryFn: api.getStats,
-    refetchInterval: 30000,
-  });
 
   // Touch handlers for sidebar elements
   const handleTouchStart = (element: Element, e: React.TouchEvent) => {
@@ -138,31 +129,6 @@ const RightSidebar = () => {
               ))}
             </div>
           </div>
-
-          {stats && (
-            <div className="mb-6">
-              <h3 className={`font-medium mb-3 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <span>📊</span>
-                Statistics
-              </h3>
-              <div className={`rounded-lg p-4 space-y-2 text-sm transition-colors duration-300 ${
-                isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
-              }`}>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Total Elements:</span>
-                  <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total_elements}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Combinations:</span>
-                  <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{stats.total_combinations}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>Cache Size:</span>
-                  <span className={`font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{stats.cache_size}</span>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
