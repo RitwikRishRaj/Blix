@@ -22,10 +22,10 @@ Combine elements, discover magic. Start with Water, Fire, Wind, and Earth—then
 ## 🛠️ Tech Stack
 
 ### Frontend
-- **Next.js 15** - React framework with App Router
+- **Next.js 16** - React framework with App Router
 - **React 19** - UI library
 - **TypeScript** - Type safety
-- **Tailwind CSS** - Styling
+- **Tailwind CSS 4** - Styling
 - **Zustand** - State management
 - **TanStack Query** - Data fetching
 
