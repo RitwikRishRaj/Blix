@@ -3,6 +3,7 @@
 Combine elements, discover magic. Start with Water, Fire, Wind, and Earth—then craft your way to infinite possibilities.
 
 > Inspired by [Infinite Craft](https://neal.fun/infinite-craft/) and the [Infinite Craft Wiki](https://infinibrowser.wiki/)
+
 > Documentation at [Documentation](https://ritwikheadway.notion.site/?pvs=74)
 ## 🎮 Live at
 
