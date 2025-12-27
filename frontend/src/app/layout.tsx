@@ -16,11 +16,41 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Blix",
-  description: "An Infinite craft based game",
+  title: "Blix - Element Crafting Game",
+  description: "Combine elements, discover magic. Start with Water, Fire, Wind, and Earth—then craft your way to infinite possibilities. Free online crafting game inspired by Infinite Craft.",
+  keywords: ["element crafting", "infinite craft", "puzzle game", "browser game", "free game", "element combinations"],
+  authors: [{ name: "Blix" }],
+  creator: "Blix",
+  publisher: "Blix",
+  openGraph: {
+    title: "Blix - Element Crafting Game",
+    description: "Combine elements and discover infinite possibilities. Free online crafting game.",
+    url: "https://blix-beige.vercel.app",
+    siteName: "Blix",
+    type: "website",
+    images: [
+      {
+        url: "/Blixlogo.ico",
+        width: 32,
+        height: 32,
+        alt: "Blix Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "Blix - Element Crafting Game",
+    description: "Combine elements and discover infinite possibilities.",
+    images: ["/Blixlogo.ico"],
+  },
   icons: {
     icon: "/Blixlogo.ico",
   },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
 };
 
 export default function RootLayout({
