@@ -5,8 +5,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
-      - OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL:-https://openrouter.ai/api/v1}
+      - CEREBRAS_API_KEY=${CEREBRAS_API_KEY}
       - SITE_URL=${SITE_URL:-http://localhost:3000}
       - SITE_NAME=${SITE_NAME:-Infinite Craft Game}
     env_file:

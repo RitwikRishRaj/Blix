@@ -1,4 +1,4 @@
-"""Infinite Craft API - FastAPI Backend with OpenRouter AI"""
+"""Infinite Craft API - FastAPI Backend with Cerebras AI"""
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel

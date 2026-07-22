@@ -4,7 +4,7 @@ services:
     runtime: docker
     rootDir: backend
     envVars:
-      - key: OPENROUTER_API_KEY
+      - key: CEREBRAS_API_KEY
         sync: false
       - key: ALLOW_ORIGINS
         sync: false

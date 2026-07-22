@@ -2,21 +2,21 @@
 import os
 import time
 from typing import Optional, Dict, Tuple
-from cerebras.cloud.sdk import Cerebras
+from cerebras.cloud.sdk import AsyncCerebras
 
 class CraftService:
-    """Crafting service using OpenRouter AI."""
+    """Crafting service using Cerebras AI."""
     
     def __init__(self):
         self._cache: Dict[str, Tuple[str, str, float]] = {}  # key -> (result, emoji, timestamp)
         self._cache_ttl = 86400
         self.basic_elements = ["Water", "Fire", "Wind", "Earth"]
-        self.api_key = os.getenv("CEREBRAS_API_KEY", "")
+        self.api_key = os.getenv("CEREBRAS_API_KEY")
         self.model = "gpt-oss-120b"
         
         # Initialize Cerebras client
         if self.api_key:
-            self.cerebras_client = Cerebras(api_key=self.api_key)
+            self.cerebras_client = AsyncCerebras(api_key=self.api_key)
         else:
             self.cerebras_client = None
         
@@ -103,7 +103,7 @@ Examples:
 Your turn: {e1} + {e2} ="""
 
         try:
-            completion = self.cerebras_client.chat.completions.create(
+            completion = await self.cerebras_client.chat.completions.create(
                 messages=[{"role": "user", "content": prompt}],
                 model=self.model,
                 max_completion_tokens=20,
