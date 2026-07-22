@@ -104,11 +104,18 @@ Your turn: {e1} + {e2} ="""
 
         try:
             completion = await self.cerebras_client.chat.completions.create(
-                messages=[{"role": "user", "content": prompt}],
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "You are an Infinite Craft game engine. Respond with ONLY: ElementName Emoji. No explanations, no punctuation, just the element name and one emoji. Example: Steam 💨"
+                    },
+                    {"role": "user", "content": prompt}
+                ],
                 model=self.model,
-                max_completion_tokens=20,
+                max_completion_tokens=200,
                 temperature=0.7,
                 top_p=1,
+                reasoning_effort="low",
                 stream=False
             )
             
