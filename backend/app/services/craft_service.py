@@ -12,7 +12,7 @@ class CraftService:
         self._cache_ttl = 86400
         self.basic_elements = ["Water", "Fire", "Wind", "Earth"]
         self.api_key = os.getenv("CEREBRAS_API_KEY", "")
-        self.model = "llama-3.3-70b"
+        self.model = "gpt-oss-120b"
         
         # Initialize Cerebras client
         if self.api_key:
