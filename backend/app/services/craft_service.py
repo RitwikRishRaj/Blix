@@ -112,7 +112,10 @@ Your turn: {e1} + {e2} ="""
                 stream=False
             )
             
-            result_text = completion.choices[0].message.content.strip()
+            content = completion.choices[0].message.content
+            if not content:
+                return (None, None)
+            result_text = content.strip()
             
             # Extract element name and emoji
             element_name = []
