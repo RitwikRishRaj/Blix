@@ -93,6 +93,12 @@ class CraftService:
         
         prompt = f"""Combine {e1} + {e2} in Infinite Craft style.
 
+Rules:
+- Return a single new element that makes logical/creative sense
+- Be creative but logical (Fire + Water = Steam, Earth + Water = Plant)
+- Return "Nothing" only if combination truly makes no sense
+- Include a RELEVANT emoji that represents the result (not 🧪 unless it's actually a potion/chemical)
+
 Reply format: ElementName Emoji
 Examples:
 - Steam 💨
